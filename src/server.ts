@@ -1,10 +1,16 @@
 import fastify from "fastify";
+import {
+  serializerCompiler,
+  validatorCompiler,
+} from "fastify-type-provider-zod";
+import { createTrip } from "./routes/create-trip";
 
 const app = fastify();
 
-app.get("/", async (req, res) => {
-  return "hello";
-});
+app.setValidatorCompiler(validatorCompiler);
+app.setSerializerCompiler(serializerCompiler);
+
+app.register(createTrip);
 
 app
   .listen({ port: 3333 })
