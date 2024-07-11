@@ -26,7 +26,25 @@ export async function getActivities(app: FastifyInstance) {
         throw new Error("Trip not found");
       }
 
-      return { activities: trip.activities };
+      const differenceInDaysBetweenStartAndEnd = dayjs(trip.ends_at).diff(
+        trip.starts_at,
+        "days"
+      );
+
+      const activities = Array.from({
+        length: differenceInDaysBetweenStartAndEnd + 1,
+      }).map((_, index) => {
+        const date = dayjs(trip.starts_at).add(index, "days");
+
+        return {
+          date: date.toDate(),
+          activities: trip.activities.filter((activity) => {
+            return dayjs(activity.occurs_at).isSame(date, "day");
+          }),
+        };
+      });
+
+      return { activities };
     }
   );
 }
